@@ -69,8 +69,8 @@ public class Driver {
 	}
 
 	public static void main(String[] args) throws Exception {
-		 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		 new Driver().start();
+		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		new Driver().start();
 		try {
 			nu.pattern.OpenCV.loadShared();
 		} catch (ExceptionInInitializerError e) {

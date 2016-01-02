@@ -1,5 +1,6 @@
 package org.cehci.harvic.module.camera;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -53,9 +54,16 @@ public class CameraManager {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
+//				try {
+//					cameraModule.capture();
+//				} catch (OpeningVideoSourceException | LoadingClassifierException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+				
 				try {
-					cameraModule.capture();
-				} catch (OpeningVideoSourceException | LoadingClassifierException e) {
+					cameraModule.captureImage();
+				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}

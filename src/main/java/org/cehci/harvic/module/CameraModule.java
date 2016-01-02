@@ -3,8 +3,12 @@ package org.cehci.harvic.module;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+
+import javax.imageio.ImageIO;
 
 import org.cehci.harvic.LoadingClassifierException;
 import org.cehci.harvic.OpeningVideoSourceException;
@@ -20,6 +24,7 @@ import org.opencv.core.MatOfRect;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
+import org.opencv.highgui.Highgui;
 
 public class CameraModule implements PropertyChangeObservable {
 
@@ -30,7 +35,8 @@ public class CameraModule implements PropertyChangeObservable {
 	private VideoSource videoSource;
 	private PersonDetector personDetector;
 
-	public CameraModule(Camera camera, VideoSource videoSource, PersonDetector personDetector) {
+	public CameraModule(Camera camera, VideoSource videoSource,
+			PersonDetector personDetector) {
 		this.camera = camera;
 		this.videoSource = videoSource;
 		this.personDetector = personDetector;
@@ -48,7 +54,8 @@ public class CameraModule implements PropertyChangeObservable {
 		}
 	}
 
-	public void capture() throws OpeningVideoSourceException, LoadingClassifierException {
+	public void capture() throws OpeningVideoSourceException,
+			LoadingClassifierException {
 		openCamera();
 		while (isCapturing()) {
 			Mat frame = videoSource.nextFrame();
@@ -59,19 +66,41 @@ public class CameraModule implements PropertyChangeObservable {
 		closeCamera();
 	}
 
+	public void captureImage() throws IOException {
+		File directory = new File(
+				"Data Frames/IXMAS/pointing/1/");
+		// BufferedImage currImage;
+		Mat frame;
+		for (File file : directory.listFiles()) {
+			if (file.getName().toLowerCase().endsWith(".png")) {
+				// currImage = ImageIO.read(file);
+				// byte[] pixels = ((DataBufferByte)
+				// currImage.getRaster().getDataBuffer()).getData();
+				frame = Highgui.imread(file.getAbsolutePath());
+				// frame.put(0, 0, pixels);
+				MatOfRect detectedPeople = personDetector.detect(frame);
+				drawBoundingBoxesOnPersons(frame, detectedPeople);
+				notifyPropertyChange("frame", null, toBufferedImage(frame));
+			}
+		}
+	}
+
 	private void closeCamera() {
 		videoSource.close();
 		notifyPropertyChange("status", "open", "close");
 		if (blackPlaceholder == null) {
-			blackPlaceholder = new Mat(320, 240, CvType.CV_8UC3, new Scalar(0, 0, 0));
+			blackPlaceholder = new Mat(320, 240, CvType.CV_8UC3, new Scalar(0,
+					0, 0));
 		}
 		notifyPropertyChange("frame", null, toBufferedImage(blackPlaceholder));
 	}
 
-	private void drawBoundingBoxesOnPersons(Mat inputImage, MatOfRect detectedPeople) {
+	private void drawBoundingBoxesOnPersons(Mat inputImage,
+			MatOfRect detectedPeople) {
 		for (Rect rect : detectedPeople.toArray()) {
-			Core.rectangle(inputImage, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height),
-					new Scalar(0, 255, 0));
+			Core.rectangle(inputImage, new Point(rect.x, rect.y), new Point(
+					rect.x + rect.width, rect.y + rect.height), new Scalar(0,
+					255, 0));
 		}
 	}
 
@@ -95,7 +124,8 @@ public class CameraModule implements PropertyChangeObservable {
 	}
 
 	@Override
-	public void notifyPropertyChange(String property, Object oldValue, Object newValue) {
+	public void notifyPropertyChange(String property, Object oldValue,
+			Object newValue) {
 		for (PropertyChangeObserver observer : propertyChangeObservers) {
 			observer.onPropertyChange(property, oldValue, newValue);
 		}
@@ -110,7 +140,8 @@ public class CameraModule implements PropertyChangeObservable {
 		byte[] b = new byte[bufferSize];
 		m.get(0, 0, b); // get all the pixels
 		BufferedImage image = new BufferedImage(m.cols(), m.rows(), type);
-		final byte[] targetPixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
+		final byte[] targetPixels = ((DataBufferByte) image.getRaster()
+				.getDataBuffer()).getData();
 		System.arraycopy(b, 0, targetPixels, 0, b.length);
 		return image;
 	}
