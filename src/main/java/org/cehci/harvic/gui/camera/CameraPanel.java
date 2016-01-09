@@ -73,9 +73,9 @@ public class CameraPanel extends JPanel implements PropertyChangeObserver{
 		});
 	}
 	
-	public JLabel getFeedLabel(){
-		return cameraFeed;
-	}
+//	public JLabel getFeedLabel(){
+//		return cameraFeed;
+//	}
 	
 	public void setCameraButtonAction(Action cameraButtonAction){
 		powerButton.setAction(cameraButtonAction);
