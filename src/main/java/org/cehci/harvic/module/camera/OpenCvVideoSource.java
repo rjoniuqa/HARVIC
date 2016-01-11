@@ -22,10 +22,8 @@ public class OpenCvVideoSource implements VideoSource {
 				Mat frame = new Mat();
 				videoCapture.retrieve(frame);
 				Imgproc.resize(frame, frame, new Size(320, 240));
-				System.out.println("asd");
 				return frame;
 			}
-			System.out.println("bbbb");
 		}
 		return null;
 	}

@@ -7,6 +7,7 @@ import java.awt.GridBagLayout;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
@@ -14,27 +15,41 @@ import org.cehci.harvic.gui.camera.CameraGui;
 import org.cehci.harvic.gui.camera.CameraPanel;
 import org.cehci.harvic.gui.log.LogGui;
 
+import dev.cehci.harvic.gui.input.InputGui;
+import dev.cehci.harvic.gui.input.InputPanel;
+
 public class Gui {
 
 	private JFrame appFrame;
-	private JPanel appContentPane;
+	private JPanel cameraContentPane;
+	private JPanel imageContentPane;
+	private JTabbedPane tabbedPane;
 	private CameraGui cameraGui;
 	private LogGui logGui;
+	private InputGui inputGui;
 
-	public Gui(LogGui logGui, CameraGui cameraGui) {
+	public Gui(LogGui logGui, CameraGui cameraGui, InputGui inputGui) {
 		this.logGui = logGui;
 		this.cameraGui = cameraGui;
+		this.inputGui = inputGui;
 		initializeComponents();
 		addComponents();
 	}
 
 	private void initializeComponents() {
-		appContentPane = new JPanel(new GridBagLayout());
-		appContentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
+		cameraContentPane = new JPanel(new GridBagLayout());
+		cameraContentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
+		
+		imageContentPane = new JPanel(new GridBagLayout());
+		imageContentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
+		tabbedPane = new JTabbedPane();
+		tabbedPane.add("Camera", cameraContentPane);
+		tabbedPane.add("Image", imageContentPane);
+		
 		appFrame = new JFrame("HAR-VIC");
 		appFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		appFrame.setExtendedState(Frame.MAXIMIZED_BOTH);
-		appFrame.setContentPane(appContentPane);
+		appFrame.setContentPane(tabbedPane);
 
 		Dimension minimumCameraGuiSize = cameraGui.getMinimumSize();
 		Dimension minimumLogGuiSize = logGui.getMinimumSize();
@@ -49,11 +64,13 @@ public class Gui {
 		constraints.gridwidth = 3;
 		constraints.weightx = 1;
 		constraints.weighty = 1;
-		appContentPane.add(cameraGui.getContentPane(), constraints);
+		cameraContentPane.add(cameraGui.getContentPane(), constraints);
 		constraints.gridx = 3;
 		constraints.gridwidth = 2;
 		constraints.weightx = 1;
-		appContentPane.add(logGui.getContentPane(), constraints);
+		cameraContentPane.add(logGui.getContentPane(), constraints);
+		
+		imageContentPane.add(inputGui.getContentPane());
 	}
 
 	public void show() {
@@ -62,5 +79,9 @@ public class Gui {
 
 	public void addCameraPanel(CameraPanel cameraPanel) {
 		cameraGui.addCameraPanel(cameraPanel);
+	}
+	
+	public void addInputPanel(InputPanel inputPanel) {
+		inputGui.addInputPanel(inputPanel);
 	}
 }
