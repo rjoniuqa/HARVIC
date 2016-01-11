@@ -24,7 +24,7 @@ import org.opencv.core.MatOfRect;
 import org.opencv.core.Size;
 import org.opencv.features2d.FeatureDetector;
 import org.opencv.features2d.Features2d;
-import org.opencv.highgui.Highgui;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.HOGDescriptor;
 
@@ -47,7 +47,7 @@ public class Driver {
 		while ((length = sampleImage.read(imageBytes)) > 0) {
 			byteArrayOutputStream.write(imageBytes, 0, length);
 		}
-		Mat mat = Highgui.imdecode(new MatOfByte(byteArrayOutputStream.toByteArray()), Highgui.IMREAD_ANYCOLOR);
+		Mat mat = Imgcodecs.imdecode(new MatOfByte(byteArrayOutputStream.toByteArray()), Imgcodecs.IMREAD_ANYCOLOR);
 		Imgproc.resize(mat, mat, new Size(320, 240));
 		MatOfRect detectedPersons = new MatOfRect();
 		HOGDescriptor detector = new HOGDescriptor();
@@ -61,23 +61,20 @@ public class Driver {
 		Mat outputImage = new Mat();
 		Features2d.drawKeypoints(croppedPerson, imageKeypoints, outputImage);
 		outputImage.copyTo(mat);
-//		for (Rect rect : detectedPersons.toArray()) {
-//			Core.rectangle(mat, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height),
-//					new Scalar(0, 255, 0));
-//		}
-		Highgui.imwrite("person detected.png", mat);
+		// for (Rect rect : detectedPersons.toArray()) {
+		// Core.rectangle(mat, new Point(rect.x, rect.y), new Point(rect.x +
+		// rect.width, rect.y + rect.height),
+		// new Scalar(0, 255, 0));
+		// }
+		Imgcodecs.imwrite("person detected.png", mat);
 	}
 
 	public static void main(String[] args) throws Exception {
-		 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		 new Driver().start();
-		try {
-			nu.pattern.OpenCV.loadShared();
-		} catch (ExceptionInInitializerError e) {
-			System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-		}
+		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+		new Driver().start();
 
-//		personDetect();
+		// personDetect();
 		// JFrame frame = new JFrame();
 		// frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		// frame.setExtendedState(Frame.MAXIMIZED_BOTH);

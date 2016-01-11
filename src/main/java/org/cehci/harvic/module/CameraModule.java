@@ -13,13 +13,13 @@ import org.cehci.harvic.PropertyChangeObserver;
 import org.cehci.harvic.module.camera.Camera;
 import org.cehci.harvic.module.camera.PersonDetector;
 import org.cehci.harvic.module.camera.VideoSource;
-import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfRect;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
 
 public class CameraModule implements PropertyChangeObservable {
 
@@ -35,7 +35,7 @@ public class CameraModule implements PropertyChangeObservable {
 		this.videoSource = videoSource;
 		this.personDetector = personDetector;
 	}
-
+	
 	public boolean isCapturing() {
 		synchronized (this) {
 			return isCapturing;
@@ -70,7 +70,7 @@ public class CameraModule implements PropertyChangeObservable {
 
 	private void drawBoundingBoxesOnPersons(Mat inputImage, MatOfRect detectedPeople) {
 		for (Rect rect : detectedPeople.toArray()) {
-			Core.rectangle(inputImage, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height),
+			Imgproc.rectangle(inputImage, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height),
 					new Scalar(0, 255, 0));
 		}
 	}

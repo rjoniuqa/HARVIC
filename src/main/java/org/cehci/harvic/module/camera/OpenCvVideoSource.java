@@ -3,8 +3,8 @@ package org.cehci.harvic.module.camera;
 import org.cehci.harvic.OpeningVideoSourceException;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
-import org.opencv.highgui.VideoCapture;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.videoio.VideoCapture;
 
 public class OpenCvVideoSource implements VideoSource {
 
