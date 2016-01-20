@@ -3,9 +3,9 @@ package org.cehci.harvic.module;
 import java.io.File;
 import java.io.IOException;
 
+import org.bytedeco.javacpp.opencv_core.Mat;
+import org.bytedeco.javacpp.opencv_core.RectVector;
 import org.cehci.harvic.module.camera.PersonDetector;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfRect;
 
 import dev.cehci.harvic.module.input.ImageDirectorySource;
 import dev.cehci.harvic.module.input.InputSource;
@@ -27,7 +27,7 @@ public class ImageModule extends DeviceModule {
 		
 		while (imageDirectorySource.hasNext()) {
 			frame = imageDirectorySource.nextFrame();
-			MatOfRect detectedPeople = personDetector.detect(frame);
+			RectVector detectedPeople = personDetector.detect(frame);
 			drawBoundingBoxesOnPersons(frame, detectedPeople);
 			notifyPropertyChange("frame", null, toBufferedImage(frame));
 

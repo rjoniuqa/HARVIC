@@ -1,30 +1,33 @@
 package org.cehci.harvic.module;
 
+import static org.bytedeco.javacpp.opencv_imgproc.rectangle;
+
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.bytedeco.javacpp.opencv_core.Mat;
+import org.bytedeco.javacpp.opencv_core.Point;
+import org.bytedeco.javacpp.opencv_core.Rect;
+import org.bytedeco.javacpp.opencv_core.RectVector;
+import org.bytedeco.javacpp.opencv_core.Scalar;
+import org.bytedeco.javacpp.indexer.ByteIndexer;
 import org.cehci.harvic.PropertyChangeObservable;
 import org.cehci.harvic.PropertyChangeObserver;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfRect;
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
-import org.opencv.imgproc.Imgproc;
 
 public abstract class DeviceModule implements PropertyChangeObservable {
 	
 	private Collection<PropertyChangeObserver> propertyChangeObservers = new ArrayList<PropertyChangeObserver>();
 	
 	protected void drawBoundingBoxesOnPersons(Mat inputImage,
-			MatOfRect detectedPeople) {
-		for (Rect rect : detectedPeople.toArray()) {
-			Imgproc.rectangle(inputImage, new Point(rect.x, rect.y), new Point(
-					rect.x + rect.width, rect.y + rect.height), new Scalar(0,
-					255, 0));
+			RectVector detectedPeople) {
+		for (int i = 0; i < detectedPeople.size(); i++) {
+			Rect rect = detectedPeople.get(i);
+			rectangle(inputImage, new Point(rect.x(), rect.y()), new Point(
+					rect.x() + rect.width(), rect.y() + rect.height()), new Scalar(0.0,
+					255.0, 0.0, 0.0));
 		}
 	}
 
@@ -35,7 +38,8 @@ public abstract class DeviceModule implements PropertyChangeObservable {
 		}
 		int bufferSize = m.channels() * m.cols() * m.rows();
 		byte[] b = new byte[bufferSize];
-		m.get(0, 0, b); // get all the pixels
+		ByteIndexer indexer = m.createIndexer();
+		indexer.get(0, 0, b); // get all the pixels
 		BufferedImage image = new BufferedImage(m.cols(), m.rows(), type);
 		final byte[] targetPixels = ((DataBufferByte) image.getRaster()
 				.getDataBuffer()).getData();

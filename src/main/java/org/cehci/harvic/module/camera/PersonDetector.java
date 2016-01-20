@@ -1,9 +1,9 @@
 package org.cehci.harvic.module.camera;
 
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfRect;
+import org.bytedeco.javacpp.opencv_core.Mat;
+import org.bytedeco.javacpp.opencv_core.RectVector;
 
 public interface PersonDetector {
 
-	public MatOfRect detect(Mat frame);
+	public RectVector detect(Mat frame);
 }

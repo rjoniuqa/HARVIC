@@ -1,17 +1,18 @@
 package org.cehci.harvic.module;
 
+import static org.bytedeco.javacpp.opencv_imgproc.rectangle;
+
+import org.bytedeco.javacpp.opencv_core;
+import org.bytedeco.javacpp.opencv_core.Mat;
+import org.bytedeco.javacpp.opencv_core.Point;
+import org.bytedeco.javacpp.opencv_core.Rect;
+import org.bytedeco.javacpp.opencv_core.RectVector;
+import org.bytedeco.javacpp.opencv_core.Scalar;
 import org.cehci.harvic.LoadingClassifierException;
 import org.cehci.harvic.OpeningVideoSourceException;
 import org.cehci.harvic.module.camera.Camera;
 import org.cehci.harvic.module.camera.PersonDetector;
 import org.cehci.harvic.module.camera.VideoSource;
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfRect;
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
-import org.opencv.imgproc.Imgproc;
 
 public class CameraModule extends DeviceModule {
 
@@ -43,7 +44,7 @@ public class CameraModule extends DeviceModule {
 		openCamera();
 		while (isCapturing()) {
 			Mat frame = videoSource.nextFrame();
-			MatOfRect detectedPeople = personDetector.detect(frame);
+			RectVector detectedPeople = personDetector.detect(frame);
 			drawBoundingBoxesOnPersons(frame, detectedPeople);
 			notifyPropertyChange("frame", null, toBufferedImage(frame));
 		}
@@ -54,15 +55,16 @@ public class CameraModule extends DeviceModule {
 		videoSource.close();
 		notifyPropertyChange("status", "open", "close");
 		if (blackPlaceholder == null) {
-			blackPlaceholder = new Mat(320, 240, CvType.CV_8UC3, new Scalar(0, 0, 0));
+			blackPlaceholder = new Mat(320, 240, opencv_core.CV_8UC3, new Scalar(0.0, 0.0, 0.0, 0.0));
 		}
 		notifyPropertyChange("frame", null, toBufferedImage(blackPlaceholder));
 	}
 
-	protected void drawBoundingBoxesOnPersons(Mat inputImage, MatOfRect detectedPeople) {
-		for (Rect rect : detectedPeople.toArray()) {
-			Imgproc.rectangle(inputImage, new Point(rect.x, rect.y),
-					new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 255, 0));
+	protected void drawBoundingBoxesOnPersons(Mat inputImage, RectVector detectedPeople) {
+		for (int i = 0; i < detectedPeople.size(); i++) {
+			Rect rect = detectedPeople.get(i);
+			rectangle(inputImage, new Point(rect.x(), rect.y()),
+					new Point(rect.x() + rect.width(), rect.y() + rect.height()), new Scalar(0.0, 255.0, 0.0, 0.0));
 		}
 	}
 

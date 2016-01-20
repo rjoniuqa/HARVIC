@@ -1,10 +1,10 @@
 package org.cehci.harvic.module.camera;
 
+import org.bytedeco.javacpp.opencv_core.Mat;
+import org.bytedeco.javacpp.opencv_core.Size;
+import org.bytedeco.javacpp.opencv_videoio.VideoCapture;
 import org.cehci.harvic.OpeningVideoSourceException;
-import org.opencv.core.Mat;
-import org.opencv.core.Size;
-import org.opencv.imgproc.Imgproc;
-import org.opencv.videoio.VideoCapture;
+import static org.bytedeco.javacpp.opencv_imgproc.*;
 
 public class OpenCvVideoSource implements VideoSource {
 
@@ -21,7 +21,7 @@ public class OpenCvVideoSource implements VideoSource {
 			if (videoCapture.grab()) {
 				Mat frame = new Mat();
 				videoCapture.retrieve(frame);
-				Imgproc.resize(frame, frame, new Size(320, 240));
+				resize(frame, frame, new Size(320, 640));
 				return frame;
 			}
 		}

@@ -8,12 +8,11 @@ import java.util.Collection;
 
 import javax.swing.UIManager;
 
+import org.bytedeco.javacpp.opencv_core.Mat;
 import org.cehci.harvic.gui.Gui;
 import org.cehci.harvic.gui.GuiBuilder;
 import org.cehci.harvic.module.camera.Camera;
 import org.cehci.harvic.module.camera.CameraManager;
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
 
 import dev.cehci.harvic.module.input.ImageManager;
 
@@ -57,7 +56,7 @@ public class Driver {
 
 	public static void main(String[] args) throws Exception {
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+//		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		new Driver().start();
 
 		// personDetect();
@@ -134,19 +133,19 @@ public class Driver {
 		}
 	}
 
-	public static Image toBufferedImage(Mat m) {
-		int type = BufferedImage.TYPE_BYTE_GRAY;
-		if (m.channels() > 1) {
-			type = BufferedImage.TYPE_3BYTE_BGR;
-		}
-		int bufferSize = m.channels() * m.cols() * m.rows();
-		byte[] b = new byte[bufferSize];
-		m.get(0, 0, b); // get all the pixels
-		BufferedImage image = new BufferedImage(m.cols(), m.rows(), type);
-		final byte[] targetPixels = ((DataBufferByte) image.getRaster()
-				.getDataBuffer()).getData();
-		System.arraycopy(b, 0, targetPixels, 0, b.length);
-		return image;
-
-	}
+//	public static Image toBufferedImage(Mat m) {
+//		int type = BufferedImage.TYPE_BYTE_GRAY;
+//		if (m.channels() > 1) {
+//			type = BufferedImage.TYPE_3BYTE_BGR;
+//		}
+//		int bufferSize = m.channels() * m.cols() * m.rows();
+//		byte[] b = new byte[bufferSize];
+//		m.get(0, 0, b); // get all the pixels
+//		BufferedImage image = new BufferedImage(m.cols(), m.rows(), type);
+//		final byte[] targetPixels = ((DataBufferByte) image.getRaster()
+//				.getDataBuffer()).getData();
+//		System.arraycopy(b, 0, targetPixels, 0, b.length);
+//		return image;
+//
+//	}
 }
