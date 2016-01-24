@@ -5,10 +5,11 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.bytedeco.javacpp.opencv_core.Mat;
-import org.bytedeco.javacpp.opencv_core.Size;
-import static org.bytedeco.javacpp.opencv_imgproc.*;
-import static org.bytedeco.javacpp.opencv_imgcodecs.*;
+import org.opencv.core.Mat;
+import org.opencv.core.Size;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
+
 public class ImageDirectorySource implements InputSource {
 
 	private Iterator<File> directoryIterator;
@@ -19,8 +20,8 @@ public class ImageDirectorySource implements InputSource {
 	public Mat nextFrame() {
 		// TODO merge imagedirectorysource and opencvvideosource
 		File currImage = (File) directoryIterator.next();
-		Mat frame = imread(currImage.getAbsolutePath());
-		resize(frame, frame, new Size(320, 240));
+		Mat frame = Imgcodecs.imread(currImage.getAbsolutePath());
+		Imgproc.resize(frame, frame, new Size(320, 240));
 		return frame;
 	}
 	

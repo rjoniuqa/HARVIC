@@ -1,18 +1,15 @@
 package org.cehci.harvic;
 
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 
 import javax.swing.UIManager;
 
-import org.bytedeco.javacpp.opencv_core.Mat;
 import org.cehci.harvic.gui.Gui;
 import org.cehci.harvic.gui.GuiBuilder;
 import org.cehci.harvic.module.camera.Camera;
 import org.cehci.harvic.module.camera.CameraManager;
+import org.opencv.core.Core;
 
 import dev.cehci.harvic.module.input.ImageManager;
 
@@ -20,7 +17,10 @@ public class Driver {
 
 	private CameraManager cameraManager = CameraManager.getInstance();
 	private ImageManager imageManager = ImageManager.getInstance();
-
+	
+	static{
+		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+	}
 
 //	private static void personDetect() throws IOException {
 //		InputStream sampleImage = ClassLoader
@@ -56,7 +56,6 @@ public class Driver {
 
 	public static void main(String[] args) throws Exception {
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-//		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		new Driver().start();
 
 		// personDetect();
