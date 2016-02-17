@@ -45,10 +45,14 @@ public class InputPanel extends JPanel implements PropertyChangeObserver {
 	private void addComponents() {
 		// TODO Auto-generated method stub
 		GridBagConstraints constraints = new GridBagConstraints();
-		constraints.fill = GridBagConstraints.HORIZONTAL;
+		constraints.fill = GridBagConstraints.BOTH;
+		constraints.weightx = 1;
+		constraints.weighty = 1;
 		constraints.insets = new Insets(0, 0, 10, 0);
 		add(inputFeed, constraints);
 		constraints.gridy = 1;
+		constraints.weightx = 0;
+		constraints.weighty = 0;
 		constraints.insets = new Insets(0, 0, 0, 0);
 		add(openButton, constraints);
 	}

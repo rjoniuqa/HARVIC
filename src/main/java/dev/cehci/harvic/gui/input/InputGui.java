@@ -25,8 +25,10 @@ public class InputGui {
 	public void addInputPanel(InputPanel inputPanel) {
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.weightx = 1;
-		constraints.gridx = 1;
-		constraints.gridy = 1;
+		constraints.weighty = 1;
+		constraints.gridx = 0;
+		constraints.gridy = 0;
+		constraints.fill = GridBagConstraints.BOTH;
 		constraints.anchor = GridBagConstraints.CENTER;
 		contentPane.add(inputPanel, constraints);
 		inputPanel.setOpenButtonAction(new SelectDirectoryAction());

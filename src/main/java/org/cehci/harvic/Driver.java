@@ -10,6 +10,7 @@ import org.cehci.harvic.gui.GuiBuilder;
 import org.cehci.harvic.module.camera.Camera;
 import org.cehci.harvic.module.camera.CameraManager;
 import org.opencv.core.Core;
+import org.opencv.ml.SVM;
 
 import dev.cehci.harvic.module.input.ImageManager;
 
@@ -57,7 +58,6 @@ public class Driver {
 	public static void main(String[] args) throws Exception {
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		new Driver().start();
-
 		// personDetect();
 		// JFrame frame = new JFrame();
 		// frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

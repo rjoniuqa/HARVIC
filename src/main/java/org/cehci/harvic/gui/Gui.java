@@ -70,7 +70,11 @@ public class Gui {
 		constraints.weightx = 1;
 		cameraContentPane.add(logGui.getContentPane(), constraints);
 		
-		imageContentPane.add(inputGui.getContentPane());
+		constraints.gridx = 0;
+		constraints.gridy = 0;
+		constraints.weightx = 1;
+		constraints.weighty = 1;
+		imageContentPane.add(inputGui.getContentPane(), constraints);
 	}
 
 	public void show() {

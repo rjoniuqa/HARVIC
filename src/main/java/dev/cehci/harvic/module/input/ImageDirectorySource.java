@@ -21,7 +21,7 @@ public class ImageDirectorySource implements InputSource {
 		// TODO merge imagedirectorysource and opencvvideosource
 		File currImage = (File) directoryIterator.next();
 		Mat frame = Imgcodecs.imread(currImage.getAbsolutePath());
-		Imgproc.resize(frame, frame, new Size(320, 240));
+//		Imgproc.resize(frame, frame, new Size(320, 240));
 		return frame;
 	}
 	
