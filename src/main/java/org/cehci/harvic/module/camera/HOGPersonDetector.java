@@ -30,9 +30,9 @@ public class HOGPersonDetector implements PersonDetector {
 		Mat grayScale = new Mat();
 		Imgproc.cvtColor(frame, grayScale, Imgproc.COLOR_BGR2GRAY);
 		detector.detectMultiScale(grayScale, detectedPersons, new MatOfDouble(), 
-				-5,
-				new Size(8, 8), new Size(0, 0), 2,
-				1, false);
+				0.1,
+				new Size(8, 8), new Size(0, 0), 1,
+				2, true);
 //		detector.detectMultiScale(frame, detectedPersons, new MatOfDouble());
 		return detectedPersons;
 	}

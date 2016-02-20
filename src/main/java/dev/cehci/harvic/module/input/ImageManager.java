@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.cehci.harvic.module.ImageModule;
-import org.cehci.harvic.module.camera.HOGPersonDetector;
+import org.cehci.harvic.module.camera.ContourPersonDetector;
 
 public class ImageManager {
 
@@ -12,8 +12,10 @@ public class ImageManager {
 	private static ImageManager imageManager;
 
 	private ImageManager() {
-		imageModule = new ImageModule(new ImageDirectorySource(),
-				new HOGPersonDetector());
+//		imageModule = new ImageModule(new ImageDirectorySource(),
+//				new HOGPersonDetector());
+		imageModule = new ImageModule(new ImageDirectorySource(), 
+				new ContourPersonDetector());
 	}
 
 	public static ImageManager getInstance() {
