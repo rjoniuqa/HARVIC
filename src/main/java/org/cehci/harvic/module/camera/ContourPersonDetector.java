@@ -43,7 +43,7 @@ public class ContourPersonDetector implements PersonDetector {
 
 		List<MatOfPoint> contourPoints = new ArrayList<MatOfPoint>();
 		findContours(difference, contourPoints, new Mat(), 
-				Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+				Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
 		
 		MatOfRect detectedPersons = new MatOfRect();
 		List<Rect> boundingBoxes = new ArrayList<Rect>();
