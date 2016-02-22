@@ -39,7 +39,7 @@ public class CameraManager {
 
 	public void registerCamera(Camera camera) {
 		registeredCameras.add(new CameraModule(camera, new OpenCvVideoSource(
-				registeredCameras.size()), new HOGPersonDetector()));
+				registeredCameras.size()), new ContourPersonDetector()));
 	}
 
 	public boolean isRegistered(Camera camera) {
