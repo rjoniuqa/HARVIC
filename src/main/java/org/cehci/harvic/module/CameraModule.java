@@ -7,12 +7,16 @@ import org.cehci.harvic.module.camera.PersonDetector;
 import org.cehci.harvic.module.camera.VideoSource;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfFloat;
 import org.opencv.core.MatOfRect;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.ml.SVM;
+import org.opencv.objdetect.HOGDescriptor;
 
 public class CameraModule extends DeviceModule {
 

@@ -9,12 +9,14 @@ import static org.opencv.imgproc.Imgproc.findContours;
 import static org.opencv.imgproc.Imgproc.threshold;
 import static org.opencv.imgproc.Imgproc.morphologyEx;
 import static org.opencv.imgproc.Imgproc.GaussianBlur;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfFloat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfRect;
 import org.opencv.core.Point;
@@ -22,7 +24,9 @@ import org.opencv.core.Rect;
 import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.ml.SVM;
 import org.opencv.objdetect.CascadeClassifier;
+import org.opencv.objdetect.HOGDescriptor;
 import org.opencv.video.BackgroundSubtractorMOG2;
 import org.opencv.video.Video;
 
@@ -32,8 +36,11 @@ public class ContourPersonDetector implements PersonDetector {
 //	private Mat referenceFrame;
 	private BackgroundSubtractorMOG2 bgSubtractor;
 
+	private SVM svm;
+
 	public ContourPersonDetector() {
 		bgSubtractor = Video.createBackgroundSubtractorMOG2(500, 16, true);
+		svm = SVM.load("svm_persondetect.xml");
 	}
 
 //	@Override
@@ -75,7 +82,6 @@ public class ContourPersonDetector implements PersonDetector {
 //		Mat kernel = Mat.ones(new Size(1, 1), CvType.CV_8U);
 //		morphologyEx(frame, frame, Imgproc.MORPH_OPEN, kernel);
 //		threshold(frame, frame, 254, 255, Imgproc.THRESH_BINARY);
-		
 		Mat grayScale = new Mat();
 		cvtColor(frame, grayScale, COLOR_BGR2GRAY);
 //		GaussianBlur(grayScale, grayScale, new Size(21, 21), 0);
@@ -112,14 +118,74 @@ public class ContourPersonDetector implements PersonDetector {
 					rect.width, rect.height);
 			boundingBoxes.add(cRect);
 		}
-		System.out.print("From " + boundingBoxes.size());
+
 		List<Rect> groupedRectangles = groupRectangles(boundingBoxes, 100);
-		rects.fromList(groupedRectangles);
+
+		rects.fromList(adjustAspectRatio(groupedRectangles));
+//		rects.fromList(groupedRectangles);
 		
-		System.out.println("to " + rects.toList().size());
-		return rects;
+		
+		//return person
+		
+		
+		return filterPerson(frame, rects);
+
+	}
+	
+	private List<Rect> adjustAspectRatio(List<Rect> rectangles){
+	
+		for(int i=0; i<rectangles.size(); i++){
+			
+			if(rectangles.get(i).height < rectangles.get(i).width ||
+					rectangles.get(i).width > rectangles.get(i).height/2){
+				rectangles.get(i).y += rectangles.get(i).height/2;
+				rectangles.get(i).height = 2 * rectangles.get(i).width;
+				rectangles.get(i).y -= rectangles.get(i).height/2;
+			}
+			else if(rectangles.get(i).width < rectangles.get(i).height/2) {
+				rectangles.get(i).x += rectangles.get(i).width/2;
+				rectangles.get(i).width= rectangles.get(i).height/2;
+				rectangles.get(i).x -= rectangles.get(i).width/2;
+			}
+			if(rectangles.get(i).x <= 0 || rectangles.get(i).y <= 0 ||
+					rectangles.get(i).x + rectangles.get(i).width >= 320 || 
+					rectangles.get(i).y + rectangles.get(i).height >= 240) {
+				rectangles.remove(i);
+			}
+		}
+		
+		return rectangles;
 	}
 
+	
+	private MatOfRect filterPerson(Mat inputImage, MatOfRect detectedPeople) {
+		MatOfRect filteredRects = new MatOfRect();
+		List<Rect> rects = new ArrayList<Rect>();
+		for (Rect rect : detectedPeople.toList()) {
+			Mat image_roi = new Mat(inputImage, rect);
+			Size sz = new Size(64,128);
+			Mat resizedImage = new Mat();
+			Imgproc.resize( image_roi, resizedImage, sz );
+			if(svm.predict(getDescriptorForImage(resizedImage)) == 1){
+				rects.add(rect);
+			}
+		}
+		filteredRects.fromList(rects);
+		return filteredRects;
+	}
+	
+	private Mat getDescriptorForImage(Mat image) {
+		Mat grayScale = new Mat();
+		MatOfFloat imageDescriptor = new MatOfFloat();
+		Imgproc.cvtColor(image, grayScale, Imgproc.COLOR_BGR2GRAY);
+		HOGDescriptor hogDescriptor = new HOGDescriptor();
+		hogDescriptor.compute(grayScale, imageDescriptor);
+		Mat reshapedImageDescriptor = imageDescriptor.reshape(0, 1);
+		return reshapedImageDescriptor;
+	}
+	
+	
+	
 //	private Rect groupRectangles(List<Rect> rectangles, int padding){
 //		if(rectangles.size() == 0)
 //			return null;

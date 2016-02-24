@@ -5,7 +5,15 @@ import java.io.IOException;
 
 import org.cehci.harvic.module.camera.PersonDetector;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfFloat;
 import org.opencv.core.MatOfRect;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
+import org.opencv.core.Size;
+import org.opencv.imgproc.Imgproc;
+import org.opencv.ml.SVM;
+import org.opencv.objdetect.HOGDescriptor;
 
 import dev.cehci.harvic.module.input.ImageDirectorySource;
 import dev.cehci.harvic.module.input.InputSource;
@@ -37,7 +45,7 @@ public class ImageModule extends DeviceModule {
 				Thread.currentThread().interrupt();
 			}
 		}
-
 	}
+
 
 }
