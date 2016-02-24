@@ -4,7 +4,7 @@ public class Camera {
 
 	private String id;
 	private String name;
-	
+
 	public Camera(String id, String name) {
 		this.id = id;
 		this.name = name;

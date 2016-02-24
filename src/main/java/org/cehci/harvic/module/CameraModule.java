@@ -1,32 +1,27 @@
 package org.cehci.harvic.module;
 
 import org.cehci.harvic.LoadingClassifierException;
-import org.cehci.harvic.OpeningVideoSourceException;
+import org.cehci.harvic.OpeningSourceException;
 import org.cehci.harvic.module.camera.Camera;
+import org.cehci.harvic.module.camera.InputSource;
 import org.cehci.harvic.module.camera.PersonDetector;
-import org.cehci.harvic.module.camera.VideoSource;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfFloat;
 import org.opencv.core.MatOfRect;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
-import org.opencv.core.Size;
-import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.ml.SVM;
-import org.opencv.objdetect.HOGDescriptor;
 
 public class CameraModule extends DeviceModule {
 
 	private boolean isCapturing;
 	private Camera camera;
 	private Mat blackPlaceholder;
-	private VideoSource videoSource;
+	private InputSource videoSource;
 	private PersonDetector personDetector;
 
-	public CameraModule(Camera camera, VideoSource videoSource, PersonDetector personDetector) {
+	public CameraModule(Camera camera, InputSource videoSource, PersonDetector personDetector) {
 		this.camera = camera;
 		this.videoSource = videoSource;
 		this.personDetector = personDetector;
@@ -44,7 +39,7 @@ public class CameraModule extends DeviceModule {
 		}
 	}
 
-	public void capture() throws OpeningVideoSourceException, LoadingClassifierException {
+	public void capture() throws OpeningSourceException, LoadingClassifierException {
 		openCamera();
 		while (isCapturing()) {
 			Mat frame = videoSource.nextFrame();
@@ -71,7 +66,7 @@ public class CameraModule extends DeviceModule {
 		}
 	}
 
-	private void openCamera() throws OpeningVideoSourceException {
+	private void openCamera() throws OpeningSourceException {
 		videoSource.open();
 		isCapturing = true;
 		notifyPropertyChange("status", "close", "open");

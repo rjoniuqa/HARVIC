@@ -13,27 +13,25 @@ public class HOGPersonDetector implements PersonDetector {
 	private HOGDescriptor detector;
 
 	public HOGPersonDetector() {
-//		detector = new HOGDescriptor(new Size(64, 128), new Size(16, 16),
-//				new Size(8, 8), new Size(8, 8), 9);
-//		detector = new HOGDescriptor(new Size(48, 96), new Size(16, 16),
-//				new Size(8, 8), new Size(8, 8), 9);
-		
+		// detector = new HOGDescriptor(new Size(64, 128), new Size(16, 16),
+		// new Size(8, 8), new Size(8, 8), 9);
+		// detector = new HOGDescriptor(new Size(48, 96), new Size(16, 16),
+		// new Size(8, 8), new Size(8, 8), 9);
+
 		detector = new HOGDescriptor();
 		SVM svm = SVM.load("svm_persondetect.xml");
 		detector.setSVMDetector(svm.getSupportVectors());
-//	 detector.setSVMDetector(HOGDescriptor.getDaimlerPeopleDetector());
-//		 detector.setSVMDetector(HOGDescriptor.getDefaultPeopleDetector());
+		// detector.setSVMDetector(HOGDescriptor.getDaimlerPeopleDetector());
+		// detector.setSVMDetector(HOGDescriptor.getDefaultPeopleDetector());
 	}
 
 	public MatOfRect detect(Mat frame) {
 		MatOfRect detectedPersons = new MatOfRect();
 		Mat grayScale = new Mat();
 		Imgproc.cvtColor(frame, grayScale, Imgproc.COLOR_BGR2GRAY);
-		detector.detectMultiScale(grayScale, detectedPersons, new MatOfDouble(), 
-				0.1,
-				new Size(8, 8), new Size(0, 0), 1,
+		detector.detectMultiScale(grayScale, detectedPersons, new MatOfDouble(), 0.1, new Size(8, 8), new Size(0, 0), 1,
 				2, true);
-//		detector.detectMultiScale(frame, detectedPersons, new MatOfDouble());
+		// detector.detectMultiScale(frame, detectedPersons, new MatOfDouble());
 		return detectedPersons;
 	}
 }

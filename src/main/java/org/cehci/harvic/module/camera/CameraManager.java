@@ -5,8 +5,9 @@ import java.util.Collection;
 import java.util.List;
 
 import org.cehci.harvic.LoadingClassifierException;
-import org.cehci.harvic.OpeningVideoSourceException;
+import org.cehci.harvic.OpeningSourceException;
 import org.cehci.harvic.module.CameraModule;
+import org.cehci.harvic.module.camera.input.VideoSource;
 
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamDiscoveryService;
@@ -29,8 +30,7 @@ public class CameraManager {
 	public Collection<Camera> detectCapturingDevices() {
 		Collection<Camera> detectedCameras = new ArrayList<Camera>();
 		for (Webcam webcam : Webcam.getWebcams()) {
-			detectedCameras.add(new Camera(
-					webcam.hashCode() + webcam.getName(), webcam.getName()));
+			detectedCameras.add(new Camera(webcam.hashCode() + webcam.getName(), webcam.getName()));
 		}
 		WebcamDiscoveryService discoveryService = Webcam.getDiscoveryService();
 		discoveryService.stop();
@@ -38,8 +38,8 @@ public class CameraManager {
 	}
 
 	public void registerCamera(Camera camera) {
-		registeredCameras.add(new CameraModule(camera, new OpenCvVideoSource(
-				registeredCameras.size()), new ContourPersonDetector()));
+		registeredCameras
+				.add(new CameraModule(camera, new VideoSource(registeredCameras.size()), new ContourPersonDetector()));
 	}
 
 	public boolean isRegistered(Camera camera) {
@@ -57,8 +57,7 @@ public class CameraManager {
 			public void run() {
 				try {
 					cameraModule.capture();
-				} catch (OpeningVideoSourceException
-						| LoadingClassifierException e) {
+				} catch (OpeningSourceException | LoadingClassifierException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}

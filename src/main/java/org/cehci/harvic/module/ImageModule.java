@@ -3,26 +3,17 @@ package org.cehci.harvic.module;
 import java.io.File;
 import java.io.IOException;
 
+import org.cehci.harvic.module.camera.InputSource;
 import org.cehci.harvic.module.camera.PersonDetector;
+import org.cehci.harvic.module.camera.input.DirectorySource;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfFloat;
 import org.opencv.core.MatOfRect;
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
-import org.opencv.core.Size;
-import org.opencv.imgproc.Imgproc;
-import org.opencv.ml.SVM;
-import org.opencv.objdetect.HOGDescriptor;
-
-import dev.cehci.harvic.module.input.ImageDirectorySource;
-import dev.cehci.harvic.module.input.InputSource;
 
 public class ImageModule extends DeviceModule {
 
 	private InputSource imageSource;
 	private PersonDetector personDetector;
-	
+
 	public ImageModule(InputSource imageSource, PersonDetector personDetector) {
 		this.imageSource = imageSource;
 		this.personDetector = personDetector;
@@ -30,9 +21,9 @@ public class ImageModule extends DeviceModule {
 
 	public void capture(File directory) throws IOException {
 		Mat frame;
-		ImageDirectorySource imageDirectorySource = (ImageDirectorySource) imageSource;
+		DirectorySource imageDirectorySource = (DirectorySource) imageSource;
 		imageDirectorySource.setDirectory(directory);
-		
+
 		while (imageDirectorySource.hasNext()) {
 			frame = imageDirectorySource.nextFrame();
 			MatOfRect detectedPeople = personDetector.detect(frame);
@@ -46,6 +37,5 @@ public class ImageModule extends DeviceModule {
 			}
 		}
 	}
-
 
 }

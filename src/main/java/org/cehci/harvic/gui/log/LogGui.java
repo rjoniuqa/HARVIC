@@ -23,8 +23,8 @@ public class LogGui {
 	public JPanel getContentPane() {
 		return contentPane;
 	}
-	
-	public Dimension getMinimumSize(){
+
+	public Dimension getMinimumSize() {
 		return contentPane.getMinimumSize();
 	}
 }
