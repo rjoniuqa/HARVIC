@@ -10,6 +10,7 @@ import static org.opencv.imgproc.Imgproc.threshold;
 import static org.opencv.imgproc.Imgproc.morphologyEx;
 import static org.opencv.imgproc.Imgproc.GaussianBlur;
 
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -75,6 +76,18 @@ public class ContourPersonDetector implements PersonDetector {
 	// // TODO: add person detection on detected boxes
 	// return detectedPersons;
 	// }
+	public Mat subtractBackground(Mat frame) {
+		Mat copy = new Mat();
+		frame.copyTo(copy);
+
+		cvtColor(copy, copy, COLOR_BGR2GRAY);
+		bgSubtractor.apply(copy, copy, 0.001);
+		Mat kernel = Mat.ones(new Size(1, 1), CvType.CV_8U);
+		morphologyEx(copy, copy, Imgproc.MORPH_OPEN, kernel);
+		threshold(copy, copy, 254, 255, Imgproc.THRESH_BINARY);
+
+		return copy;
+	}
 
 	@Override
 	public MatOfRect detect(Mat frame) {
@@ -87,7 +100,7 @@ public class ContourPersonDetector implements PersonDetector {
 		cvtColor(frame, grayScale, COLOR_BGR2GRAY);
 		// GaussianBlur(grayScale, grayScale, new Size(21, 21), 0);
 		Mat fgMask = new Mat();
-		bgSubtractor.apply(grayScale, fgMask, 0.001);
+		bgSubtractor.apply(grayScale, fgMask, 0.0025);
 		Mat kernel = Mat.ones(new Size(1, 1), CvType.CV_8U);
 		morphologyEx(fgMask, fgMask, Imgproc.MORPH_OPEN, kernel);
 		threshold(fgMask, fgMask, 254, 255, Imgproc.THRESH_BINARY);
@@ -108,6 +121,7 @@ public class ContourPersonDetector implements PersonDetector {
 
 		MatOfRect rects = new MatOfRect();
 		List<CustomRect> boundingBoxes = new ArrayList<>();
+		List<Rect> boundingBoxesBasic = new ArrayList<>();
 		for (MatOfPoint point : contourPoints) {
 			if (contourArea(point) < 50) {
 				continue;
@@ -115,16 +129,19 @@ public class ContourPersonDetector implements PersonDetector {
 			Rect rect = boundingRect(point);
 			CustomRect cRect = new CustomRect(rect.x, rect.y, rect.width, rect.height);
 			boundingBoxes.add(cRect);
+			boundingBoxesBasic.add(rect);
 		}
+		List<Rect> groupedRectangles = groupRectangles(boundingBoxes, 50);
 
-		List<Rect> groupedRectangles = groupRectangles(boundingBoxes, 100);
+		rects.fromList(groupedRectangles);
+		return rects;
 
-		rects.fromList(adjustAspectRatio(groupedRectangles));
+		// rects.fromList(adjustAspectRatio(groupedRectangles));
 		// rects.fromList(groupedRectangles);
 
 		// return person
 
-		return filterPerson(frame, rects);
+		// return filterPerson(frame, rects);
 
 	}
 
@@ -177,36 +194,6 @@ public class ContourPersonDetector implements PersonDetector {
 		Mat reshapedImageDescriptor = imageDescriptor.reshape(0, 1);
 		return reshapedImageDescriptor;
 	}
-
-	// private Rect groupRectangles(List<Rect> rectangles, int padding){
-	// if(rectangles.size() == 0)
-	// return null;
-	//
-	// int rCount = rectangles.size();
-	// int[] x1s = new int[rCount];
-	// int[] y1s = new int[rCount];
-	//
-	// int[] x2s = new int[rCount];
-	// int[] y2s = new int[rCount];
-	//
-	// for(int i = 0; i < rCount; i++){
-	// Rect curRectangle = rectangles.get(i);
-	//
-	// x1s[i] = curRectangle.x;
-	// y1s[i] = curRectangle.y;
-	//
-	// x2s[i] = curRectangle.x + curRectangle.width;
-	// y2s[i] = curRectangle.y + curRectangle.height;
-	// }
-	//
-	// Arrays.sort(x1s);
-	// Arrays.sort(x2s);
-	// Arrays.sort(y1s);
-	// Arrays.sort(y2s);
-	// return new Rect(x1s[0] - padding / 2, y1s[0] - padding / 2,
-	// x2s[rCount - 1] - x1s[0] + padding / 2,
-	// y2s[rCount - 1] - y1s[0] + padding / 2);
-	// }
 
 	private List<Rect> groupRectangles(List<CustomRect> rectangles, int threshold) {
 
@@ -301,8 +288,94 @@ public class ContourPersonDetector implements PersonDetector {
 			Point otherClusterCenter = cluster.getCenter();
 			Point myCenter = getCenter();
 
-			return Math.sqrt(
-					Math.pow(otherClusterCenter.x - myCenter.x, 2) + Math.pow(otherClusterCenter.y - myCenter.y, 2));
+			int othersLeftBoundary = cluster.x;
+			int othersRightBoundary = cluster.x + cluster.width;
+			int othersBottomBoundary = cluster.y + cluster.height;
+			int othersTopBoundary = cluster.y;
+
+			int selfLeftBoundary = x;
+			int selfRightBoundary = x + width;
+			int selfBottomBoundary = y + height;
+			int selfTopBoundary = y;
+
+			Rectangle other = new Rectangle(cluster.x, cluster.y, cluster.width, cluster.height);
+			Rectangle self = new Rectangle(x, y, width, height);
+
+			if (self.intersects(other)) {
+				System.out.println("overlap");
+				return 0;
+			}
+
+			int ax, ay, bx, by;
+			if (othersLeftBoundary > selfRightBoundary) {
+				if(othersTopBoundary <= selfBottomBoundary && othersBottomBoundary >= selfBottomBoundary ||
+						othersTopBoundary <= selfTopBoundary && othersBottomBoundary >= selfTopBoundary){
+					ay = by = 0; 
+				} else {
+					if(othersTopBoundary > selfBottomBoundary){
+						ay = selfBottomBoundary;
+						by = othersTopBoundary;
+					} else{
+						ay = selfTopBoundary;
+						by = othersBottomBoundary;
+					}
+				}
+				ax = selfRightBoundary;
+				bx = othersLeftBoundary;
+				
+			} else if (othersRightBoundary < selfLeftBoundary) {
+				if(othersTopBoundary <= selfBottomBoundary && othersBottomBoundary >= selfBottomBoundary ||
+						othersTopBoundary <= selfTopBoundary && othersBottomBoundary >= selfTopBoundary){
+					ay = by = 0; 
+				} else {
+					if(othersTopBoundary > selfBottomBoundary){
+						ay = selfBottomBoundary;
+						by = othersTopBoundary;
+					} else{
+						ay = selfTopBoundary;
+						by = othersBottomBoundary;
+					}
+				}
+				ax = selfLeftBoundary;
+				bx = othersRightBoundary;
+			} else if(othersTopBoundary > selfBottomBoundary) {
+				if(othersLeftBoundary <= selfRightBoundary && othersRightBoundary >= selfRightBoundary ||
+						othersLeftBoundary <= selfLeftBoundary && othersRightBoundary >= selfLeftBoundary){
+					ax = bx = 0;
+				} else {
+					if(selfRightBoundary < othersLeftBoundary){
+						ax = selfLeftBoundary;
+						bx = othersLeftBoundary;
+					} else {
+						ax = selfRightBoundary;
+						bx = othersRightBoundary;
+					}
+				}
+				ay = selfBottomBoundary;
+				by = othersTopBoundary;
+			} else {
+				if(othersLeftBoundary <= selfRightBoundary && othersRightBoundary >= selfRightBoundary ||
+						othersLeftBoundary <= selfLeftBoundary && othersRightBoundary >= selfLeftBoundary){
+					ax = bx = 0;
+				} else {
+					if(selfRightBoundary < othersLeftBoundary){
+						ax = selfLeftBoundary;
+						bx = othersLeftBoundary;
+					} else {
+						ax = selfRightBoundary;
+						bx = othersRightBoundary;
+					}
+				}
+				ay = selfTopBoundary;
+				by = othersBottomBoundary;
+			}
+			
+			Point a = new Point(ax, ay);
+			Point b = new Point (bx, by);
+
+			 return Math.sqrt(
+			 Math.pow(a.x - b.x, 2) +
+			 Math.pow(a.y - b.y, 2));
 		}
 
 		public Point getCenter() {

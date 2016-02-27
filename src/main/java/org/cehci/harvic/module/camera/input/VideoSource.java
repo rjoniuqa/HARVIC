@@ -31,12 +31,15 @@ public class VideoSource implements InputSource {
 
 	@Override
 	public void open() throws OpeningSourceException {
-		if (videoCapture == null) {
-			videoCapture = new VideoCapture();
-		}
-		if (!videoCapture.open(deviceId)) {
-			throw new OpeningSourceException();
-		}
+		// if (videoCapture == null) {
+		// videoCapture = new VideoCapture();
+		// }
+		// if (!videoCapture.open(deviceId)) {
+		// throw new OpeningSourceException();
+		// }
+		videoCapture = new VideoCapture();
+		System.out.println(videoCapture
+				.open("http://192.168.254.110/mjpg/1/video.mjpg"));
 	}
 
 	@Override

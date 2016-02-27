@@ -3,6 +3,9 @@ package org.cehci.harvic.module;
 import java.io.File;
 import java.io.IOException;
 
+import org.cehci.harvic.PropertyChangeObserver;
+import org.cehci.harvic.gui.Imshow;
+import org.cehci.harvic.module.camera.ContourPersonDetector;
 import org.cehci.harvic.module.camera.InputSource;
 import org.cehci.harvic.module.camera.PersonDetector;
 import org.cehci.harvic.module.camera.input.DirectorySource;
@@ -24,9 +27,21 @@ public class ImageModule extends DeviceModule {
 		DirectorySource imageDirectorySource = (DirectorySource) imageSource;
 		imageDirectorySource.setDirectory(directory);
 
+		Imshow original = new Imshow("original");
+		Imshow bgSubtracted = new Imshow("background subtracted");
+		
+		
 		while (imageDirectorySource.hasNext()) {
 			frame = imageDirectorySource.nextFrame();
 			MatOfRect detectedPeople = personDetector.detect(frame);
+			
+			if(personDetector instanceof ContourPersonDetector){
+				original.onPropertyChange("frame", null, toBufferedImage(frame));
+				ContourPersonDetector detector = (ContourPersonDetector) personDetector;
+				Mat backgroundSubtracted = detector.subtractBackground(frame);
+				bgSubtracted.onPropertyChange("frame", null, toBufferedImage(backgroundSubtracted));
+			}
+			
 			drawBoundingBoxesOnPersons(frame, detectedPeople);
 			notifyPropertyChange("frame", null, toBufferedImage(frame));
 
