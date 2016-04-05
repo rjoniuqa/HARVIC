@@ -29,15 +29,15 @@ public class InputFeedPanel extends JPanel implements PropertyChangeObserver {
 	private JLabel inputFeedImage;
 	private JButton actionButton;
 
-	public InputFeedPanel(String inputSourceName, String inputSourceId) {
+	public InputFeedPanel(String inputSourceId) {
 		super(new GridBagLayout());
 		setPreferredSize(new Dimension(325, 325));
-		initializeComponents(inputSourceName, inputSourceId);
+		initializeComponents(inputSourceId);
 		addComponents();
 	}
 
-	private void initializeComponents(String inputSourceName, String inputSourceId) {
-		inputNameLabel = new JLabel(inputSourceName);
+	private void initializeComponents(String inputSourceId) {
+		inputNameLabel = new JLabel(inputSourceId);
 		inputNameLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		inputFeedImage = new JLabel();
 		inputFeedImage.setPreferredSize(new Dimension(325, 240));
@@ -59,7 +59,8 @@ public class InputFeedPanel extends JPanel implements PropertyChangeObserver {
 		add(actionButton, constraints);
 	}
 
-	private void updateFeed(ImageIcon newFrame) throws InvocationTargetException, InterruptedException {
+	private void updateFeed(ImageIcon newFrame)
+		throws InvocationTargetException, InterruptedException {
 		SwingUtilities.invokeAndWait(new Runnable() {
 			@Override
 			public void run() {
@@ -73,7 +74,8 @@ public class InputFeedPanel extends JPanel implements PropertyChangeObserver {
 	}
 
 	@Override
-	public void onPropertyChange(String property, Object oldValue, Object newValue) {
+	public void onPropertyChange(String property, Object oldValue,
+		Object newValue) {
 		if (property.equals("frame")) {
 			ImageIcon newFrame = new ImageIcon((Image) newValue);
 			try {

@@ -6,7 +6,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Icon;
 import javax.swing.JFileChooser;
 
-import org.cehci.harvic.module.camera.ImageManager;
+import org.cehci.harvic.module.detection.ImageManager;
 
 public class SelectDirectoryAction extends AbstractAction {
 

@@ -12,8 +12,7 @@ import javax.swing.WindowConstants;
 
 import org.cehci.harvic.gui.event.Actions;
 import org.cehci.harvic.gui.log.LogGui;
-import org.cehci.harvic.module.CameraModule;
-import org.cehci.harvic.module.ImageModule;
+import org.cehci.harvic.module.DetectionModule;
 
 public class Gui {
 
@@ -27,11 +26,12 @@ public class Gui {
 			tabs = new ArrayList<>();
 		}
 
-		public Builder createCameraTab(Collection<CameraModule> cameras) {
+		public Builder createCameraTab(Collection<DetectionModule> cameras) {
 			LogGui logGui = new LogGui();
 			CameraTab cameraTab = new CameraTab(logGui);
-			for (CameraModule camera : cameras) {
-				InputFeedPanel newCameraPanel = new InputFeedPanel(camera.getCameraName(), camera.getCameraId());
+			for (DetectionModule camera : cameras) {
+				InputFeedPanel newCameraPanel = new InputFeedPanel(
+					camera.getId());
 				camera.attachObserver(newCameraPanel);
 				cameraTab.addFeedPanel(newCameraPanel);
 			}
@@ -39,10 +39,10 @@ public class Gui {
 			return this;
 		}
 
-		public Builder createDirectoryTab(ImageModule imageModule) {
-			InputFeedPanel inputFeedPanel = new InputFeedPanel("", "1");
+		public Builder createDirectoryTab(DetectionModule detectionModule) {
+			InputFeedPanel inputFeedPanel = new InputFeedPanel("1");
 			inputFeedPanel.setActionButtonAction(Actions.SELECT_DIRECTORY);
-			imageModule.attachObserver(inputFeedPanel);
+			detectionModule.attachObserver(inputFeedPanel);
 			DirectoryTab directoryTab = new DirectoryTab(inputFeedPanel);
 			tabs.add(directoryTab);
 			return this;

@@ -23,7 +23,8 @@ public class CameraTab implements Tab {
 	private JPanel mainContentPanel;
 	private JPanel subContentPanel;
 	private JScrollPane scrollPane;
-	private static final JPanel DUMMY_RIGHT = new JPanel(), DUMMY_BOTTOM = new JPanel();
+	private static final JPanel DUMMY_RIGHT = new JPanel(),
+		DUMMY_BOTTOM = new JPanel();
 
 	public CameraTab(LogGui logGui) {
 		this.logGui = logGui;
@@ -36,8 +37,9 @@ public class CameraTab implements Tab {
 		tabPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
 		subContentPanel = new JPanel(new GridBagLayout());
-		scrollPane = new JScrollPane(subContentPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollPane = new JScrollPane(subContentPanel,
+			JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+			JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setPreferredSize(new Dimension(new Dimension(725, 400)));
 		scrollPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 

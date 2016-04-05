@@ -6,7 +6,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Icon;
 import javax.swing.JButton;
 
-import org.cehci.harvic.module.camera.CameraManager;
+import org.cehci.harvic.module.detection.CameraManager;
 
 public class OpenCameraAction extends AbstractAction {
 
